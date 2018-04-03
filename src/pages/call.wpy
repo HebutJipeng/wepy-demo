@@ -1,0 +1,14 @@
+<style lang="less">
+</style>
+<template>
+    <web-view src="https://mp.weixin.qq.com/"></web-view>
+</template>
+
+<script>
+  
+  export default class Call extends wepy.page {
+    config = {
+      navigationBarTitleText: '咨询'
+    }
+  }
+</script>

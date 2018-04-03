@@ -1,0 +1,41 @@
+<style lang="less">
+
+</style>
+
+<template>
+    <view>
+        <text>节税前</text>
+        <view>
+            <view>需缴纳</view>
+            <view>1 + {{sums}} + {{title}}元</view>
+            <view>
+                <text>增值税:123.45元</text>
+                <text>企业所得税:234.21元</text>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+
+    export default class Kitem extends wepy.page {
+        data = {
+            mysum: 'ajklsf'
+        }
+        props = {
+            sums: String,
+                
+            title: {
+                type: String,
+                default: 'null'
+            }
+        }
+
+        onLoad () {
+            console.log(this.sum, this.title)
+            this.$apply();
+        }
+    }
+
+</script>

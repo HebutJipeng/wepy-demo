@@ -1,0 +1,105 @@
+<style lang="less">
+.cal-panel {
+	width:100%;
+	display:flex;
+	flex:0 1 auto;
+	font-size:16px;
+	justify-content:space-between;
+	padding:20px 0px;
+	border-bottom:6px solid #eee;
+}
+.cal-text-wrap {
+	line-height: 17px;
+	margin-left: 25px;
+}
+.cal-icon {
+	width: 15px;
+	height: 17px;
+	vertical-align: top;
+	margin-right: 7px;
+}
+.cal-text {
+	display: inline-block;
+	vertical-align: top;
+	font-size: 18px;
+	color: #20abfb;
+	line-height: 17px;
+}
+.cal-right {
+	font-size: 12px;
+	line-height: 17px;
+	margin-right: 25px;
+}
+</style>
+<template>
+	<view class="container">
+		<swiper></swiper>
+		<view class="cal-panel">
+			<view class="cal-text-wrap">
+				<image class="cal-icon" src="../images/wx-icon-cal.png" background-size="cover"></image>
+            	<view class="cal-text">节税计算器</view>	
+			</view>
+			<text class="cal-right">已有{{count}}企业计算</text>
+        </view>
+        <calForm></calForm>
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Swiper from '../components/swiper'
+import Form from '../components/k-form'
+import Modal from '../components/modal'
+
+import { 
+	getResult,
+	getCompany,
+} from '../api/api';
+
+export default class Cal extends wepy.page {
+	config = {
+		backgroundTextStyle: 'light',
+		navigationBarBackgroundColor: '#fff',
+		navigationBarTitleText: '计算器',
+		navigationBarTextStyle: 'black'
+	}
+
+	components = {
+		swiper: Swiper,
+		calForm: Form,
+		modal: Modal
+	}
+
+	data = {
+		message: 'hello world!',
+		count: 1000,
+		userInfo: {
+			nickName: '加载中...'
+		}
+	}
+
+	computed = {
+
+	}
+
+	methods = {
+
+	}
+
+	events = {
+
+	}
+
+	async onLoad() {
+		let res = await getCompany({
+			method: 'POST'
+		}) 
+
+		if (res.data.code == 200) {
+			this.count = res.data.data.data
+		} else {
+
+		}
+	}
+}
+</script>

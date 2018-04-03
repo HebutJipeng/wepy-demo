@@ -1,0 +1,359 @@
+<style lang="less">
+.result {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    height: 100%;
+}
+.panel {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 175px;
+    background-color: #20abfb;
+    text-align: center;
+    justify-content: center
+}
+
+.panel-1 {
+    color: #fff;
+    font-size: 17px;
+}
+.panel-2 {
+    color: #f8bd1e;
+    font-size: 29px;
+    font-weight: bold
+}
+.panel-3 {
+    color: #fff;
+    font-size: 16px;
+}
+.panel-3-1 {
+    color: #f8bd1e;
+}
+// res-panel
+.res-panel {
+    display: flex;
+    flex-direction: row;
+    margin: 15px 25px 0 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e4e4e4;
+}
+.res-title {
+    font-size: 14px;
+    width: 14px;
+    word-wrap: break-word; 
+    letter-spacing: 20px;
+    align-self: center;
+    text-justify: center;
+    color: #fff;
+    padding: 10px;
+    background-color: #20abfb;
+    margin-right: 15px;
+}
+.res-right {
+    padding: 8px 0;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.res-right-title {
+    font-size: 14px;
+}
+
+.res-right-fee {
+    font-size: 16px;
+    color: #f8bd1e;
+    font-weight: bold;
+}
+
+.res-right-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.res-btn {
+    margin-top: 20px;
+    box-sizing:border-box;
+    width:100%;
+    padding:0px 30px;
+    // flex-grow:1;
+    flex: 1 0 120px;
+    flex-direction:column;
+    justify-content:center;
+}
+
+button[type=primary] {
+    color: #fff;
+    background-color: #20abfb;
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+button[type=primary]:link,
+button[type=primary]:visited,
+button[type=primary]:active {
+    background-color: #20abfb;
+}
+
+.weui-footer__text {
+    flex-basis: 30px;
+    align-items: center;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 15px 0;
+}
+
+button.btn-2 {
+   color: #20abfb;
+   background-color: #fff; 
+   border: 1px solid #20abfb; 
+}
+.modal-header {
+    color: #4390EE;
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.modal-text {
+    margin-bottom: 10px;
+}
+label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 10px;
+    button {
+        font-size: 14px;
+        flex-basis: 100px;
+    }
+    .weui-label {
+        flex-basis: 100px;
+    }
+    input {
+        text-align: right;
+        &.text-center {
+            text-align:center;
+            height:1.1rem;
+        }
+    }
+}
+</style>
+<template>
+    <view class="result">
+        <view class="panel">
+            <text class="panel-1">我们将至少为您的企业节税</text>
+            <text class="panel-2">{{taxsavingmoney}}元</text>
+            <text class="panel-3">可减少<text class="panel-3-1">{{percentum}}%</text>税负</text>
+        </view>
+
+        <view class="res-panel">
+            <text class="res-title">节税前</text>
+            <view class="res-right">
+                <view class="res-right-title">需缴纳</view>
+                <view class="res-right-fee">{{pretaxtatol}}元</view>
+                <view class="res-right-text">
+                    <text>增值税:{{pretaxz}}元，</text>
+                    <text>企业所得税:{{pretaxq}}元</text>
+                </view>
+            </view>
+        </view>
+        
+        <view class="res-panel">
+            <text class="res-title">节税后</text>
+            <view class="res-right">
+                <view class="res-right-title">需缴纳</view>
+                <view class="res-right-fee">{{taxsavingtatol}}元</view>
+                <view class="res-right-text">
+                    <text>增值税:{{taxsavingz}}元，</text>
+                    <text>企业所得税:{{taxsavingq}}元</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="res-btn">
+            <button class="weui-btn k-btn-primary" type="primary" @tap="wantGo">我想节税</button>
+            <button class="weui-btn k-btn-primary btn-2" type="primary" @tap="wantGo">免费咨询</button>
+        </view>
+
+        <view class="weui-footer__text">
+           <image style="width: 140px; height: 39px;" src="../images/wx-icon-bottom.png" background-size="cover"></image> 
+        </view>
+
+        <modal hidden="{{hidden}}" bindconfirm="modalOk" bindcancel="modalCancel" confirmText="立即联系" cancelText="取消">
+            <view class="modal-header">
+                免费获取专属节税方案
+            </view>
+            <view class="modal-text">
+                请您留下联系方式，专属顾问将会在一个工作日内与您联系
+            </view>
+
+            <label>
+                <view class="weui-label">手机号码</view>
+                <input class="label-input" type="num" placeholder="请输入手机号码" @change="changeMobile"/>
+            </label>
+
+            <label>
+                <view class="weui-label">图片验证码</view>
+                <input class="label-input text-center" type="num" placeholder="请输入验证码" @change="changeCapN"/>
+                <image style="width: 88px; height: 35px; background-color: #eeeeee;" src="{{src}}" @tap="changeCap"></image>
+            </label>
+
+            <label>
+                <view class="weui-label">验证码</view>
+                <input class="label-input text-center" type="num" placeholder="请输入验证码" @change="changeSMS"/>
+                <button @tap.stop="getSMS">{{smstext}}</button>
+            </label> 
+        </modal> 
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import { 
+        getCaptcha,
+        getSMSCode,
+        getVerification
+    } from "../api/api";
+    import tip from "../utils/tip";
+    var CusBase64 = require('../utils/base64');  
+
+    export default class Result extends wepy.page {
+        config = {
+            backgroundTextStyle: 'light',
+            navigationBarBackgroundColor: '#20abfb',
+            navigationBarTitleText: '测算结果',
+            navigationBarTextStyle: 'white'
+        }
+
+        data = {
+            hidden: true,
+            nocancel:false,
+            pretaxz: 0,
+            taxsavingz: 0,
+            pretaxq: 0,
+            taxsavingq: 0,
+            pretaxtatol:0,
+            taxsavingtatol: 0,
+            taxsavingmoney: 0,
+            percentum: 0,
+            src: '',
+            cap: '',
+            mobile: '',
+            sms: '',
+            sessionid: '',
+            smstext: '获取',
+            time: 60
+        }
+
+        methods = {
+            wantGo() {
+                this.hidden = false
+            },
+            async modalCancel () {
+                this.hidden = true
+                console.log('cancel')
+            },
+            async modalOk () {
+                let res = await getVerification({
+                    query: {
+                        mobile: this.mobile,
+                        sessionid: this.sessionid,
+                        smscode: this.sms,
+                    },
+                    method: 'POST'
+                })
+                if (res.code == 200) {
+                    this.hidden = true
+                } else {
+                    tip.alert('请正确输入')
+                }
+                console.log("clicked confirm");
+                
+            },
+            async changeCap () { // 刷新验证码
+                let res = await getCaptcha({
+                    method: 'POST'
+                }) 
+                this.src = 'data:image/png;base64,' +res.data.data.data.vcode
+                this.sessionid = res.data.data.data.sessionid
+                this.$apply()
+            },
+            async getSMS () { // 获取验证码
+                let _this = this
+                if (!this.cap) {
+                    tip.alert('请输入验证码')
+                    return false
+                }
+
+                if (this.time < 60) {
+                    return false
+                }
+               
+                let setIntervalId = setInterval(function () {
+                    if (_this.time > 0) {
+                        _this.smstext = _this.time + 's';
+                        _this.$apply();
+                        _this.time--;
+                    } else {
+                        clearInterval(setIntervalId)
+                        _this.time = 60
+                        _this.smstext = '获取';
+                        _this.$apply();
+                    }
+                }, 1000)
+
+                let res = await getSMSCode({
+                    query: {
+                        code: this.cap,
+                        mobile: this.mobile,
+                        sessionid: this.sessionid
+                    },
+                    method: 'POST'
+                })
+
+                if (res == 500) {
+                   clearInterval(setIntervalId)
+                    _this.time = 60
+                    _this.smstext = '获取';
+                    _this.$apply(); 
+                    tip.alert('验证码错误')
+                }
+                console.log(res)
+            },
+            changeCapN(e) {
+                this.cap = e.detail.value
+            },
+            changeMobile(e) {
+                this.mobile = e.detail.value
+            },
+            changeSMS(e) {
+                this.sms = e.detail.value
+            }
+        }
+
+        async onLoad(query) {
+            console.log(query)
+            this.pretaxz = query.pretaxz
+            this.taxsavingz = query.taxsavingz
+            this.pretaxq = query.pretaxq
+            this.taxsavingq = query.taxsavingq
+            this.pretaxtatol = query.pretaxtatol
+            this.taxsavingtatol = query.taxsavingtatol
+            this.taxsavingmoney = query.taxsavingmoney
+            this.percentum = query.percentum
+
+            let res = await getCaptcha({
+                method: 'POST'
+            })
+
+            this.src = 'data:image/png;base64,' +res.data.data.data.vcode
+            this.sessionid = res.data.data.data.sessionid
+            this.$apply()
+        }
+    }
+</script>

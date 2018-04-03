@@ -1,0 +1,209 @@
+<style lang="less">
+    .weui-cells__tips {
+        width: 100%;
+        padding-left: 50px;
+    }
+
+    .weui-btn {
+        width: 100%;
+    }
+
+    .cal-page {
+        box-sizing:border-box;
+        width:100%;
+        padding:0px 30px;
+        flex-grow:1;
+        flex:1 0 80px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+
+    .weui-footer__text {
+        flex-basis: 30px;
+        align-items: center;
+        text-align: center;
+        background-color: #f4f4f4;
+        padding: 15px 0;
+    }
+
+    .weui-input {
+        display: inline-block
+    }
+
+    .cal-wrap {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        width: 100%;
+        color: #333;
+    }
+    .weui-cell__bd {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    button[type=primary] {
+        color: #fff;
+        background-color: #20abfb;
+        font-size: 14px;
+        padding: 5px 0;
+    }
+
+    button[type=primary]:link,
+    button[type=primary]:visited,
+    button[type=primary]:active {
+        background-color: #20abfb;
+    }
+    .weui-cell__hd {
+        margin-right: 10px;
+    }
+
+    .weui-cell_input {
+        padding: 5px 20px;
+        font-size: 16px;
+    }
+</style>
+<template>
+    <view class="cal-wrap">
+        <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">年营业额</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <input class="weui-input" type="num" placeholder="请输入大于0的数字" @change="bindSumChange" />
+                    <text>元</text>
+                </view>
+            </view>
+            <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">年总成本</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <input class="weui-input" type="num" placeholder="请输入大于0的数字" @change="bindCostChange" />
+                    <text>元</text>
+                </view>
+            </view>
+            <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">企业所属行业</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <picker mode="selector" range="{{industryLists}}" value="{{lists}}" @change="bindListsChange" style="flex:1">
+                        <view class="weui-input">{{listsText}}</view>
+                    </picker>
+                </view>
+            </view>
+           <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">企业纳税性质</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <picker mode="selector" range="{{industrytypes}}" value="{{types}}" @change="bindTypesChange" style="flex:1">
+                        <view class="weui-input">{{typesText}}</view>
+                    </picker>
+                </view>
+            </view> 
+        </view>
+
+        <view class="cal-page">   
+            <button class="weui-btn k-btn-primary" type="primary" @tap="bindCal">开始计算</button>
+        </view>
+
+        <view class="weui-footer__text">
+           <image style="width: 140px; height: 39px;" src="../images/wx-icon-bottom.png" background-size="cover"></image> 
+        </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import { 
+        getResult,
+        getCompany,
+     } from '../api/api';
+    import tip from '../utils/tip';
+
+    export default class Input extends wepy.page {
+        data = {
+            industryLists: [
+                '销售行业',
+                '服务行业'
+            ],
+            industrytypes: [
+                '小规模纳税人',
+                '一般纳税人'
+            ],
+
+            sum: '0',
+            cost: '0',
+            listsText: '请选择',
+            lists: '0',
+            typesText: '请选择',
+            types: '0',
+            time: '12:01'
+        }
+
+        methods = {
+            bindListsChange (e) {
+                this.lists = parseInt(e.detail.value) + 1;
+                this.listsText = this.industryLists[e.detail.value]
+            },
+            bindTypesChange (e) {
+                this.types = parseInt(e.detail.value) + 1;
+                this.typesText = this.industrytypes[e.detail.value]
+            },
+            async bindCal (e) {
+                console.log(parseInt(this.sum), parseInt(this.cost), parseInt(this.lists), parseInt(this.types))
+
+                if (parseInt(this.sum) <= 0 || parseInt(this.cost) <= 0 || parseInt(this.lists) < 0 || parseInt(this.types) < 0) {
+                    tip.alert('请正确填写数据')
+                    return false
+                }
+
+                let res = await getResult({
+                    query: {
+                        costing: this.cost,
+                        industry: this.lists,
+                        turnover: this.sum,
+                        type: this.types,
+                    },
+                    method: 'POST'
+                })
+
+                let _res = res.data
+                console.log(_res)
+                if (_res.code == 200) {
+                    let _url = 'result?pretaxz=' + _res.data.data.pretaxz + 
+                                '&taxsavingz=' + _res.data.data.taxsavingz + 
+                                '&pretaxq=' + _res.data.data.pretaxq + 
+                                '&taxsavingq=' + _res.data.data.taxsavingq +
+                                '&pretaxtatol=' + _res.data.data.pretaxtatol +
+                                '&taxsavingtatol=' + _res.data.data.taxsavingtatol +
+                                '&taxsavingmoney=' + _res.data.data.taxsavingmoney +
+                                '&percentum=' + _res.data.data.percentum
+                                
+                    wx.navigateTo({
+                        url: _url
+                    })
+                } else {
+
+                }
+                    
+            },  
+            bindSumChange (e) {
+                this.sum = e.detail.value
+            },
+            bindCostChange (e) {
+                this.cost = e.detail.value
+            }
+            
+        }
+
+        async onLoad () {
+           
+        }
+    }
+</script>
